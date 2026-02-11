@@ -1,31 +1,51 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Await, Link, useLoaderData, useSearchParams } from "react-router-dom";
 import { Spiner } from "../components/spiner";
+import { BlogFilter } from "../components/blogFilter";
+import { Suspense } from "react";
 
 const PostsPage = () => {
-    const [posts, setPost] = useState([]);
-
-    useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-            .then(res => res.json())
-            .then(data => setPost(data))
-    }, [])
+    const [searchParams, setSearchParams] = useSearchParams();
+    const postQuery = searchParams.get('post') || '';
+    const { posts } = useLoaderData();
 
     return (
         <div className="container">
             <h1>Postpage</h1>
-            {!posts.length && <Spiner />}
-            <ul>
-                {
-                    posts.map((post) => (
-                        <Link key={post.id} to={`/posts/${post.id}`} className="link">
-                            <li>{post.title}</li>
-                        </Link>
-                    ))
-                }
-            </ul>
+
+            <Suspense fallback={<Spiner />}>
+                <Await resolve={posts}>
+                    {
+                        (resolvedPosts) => (
+                            <>
+                                <BlogFilter setSearchParams={setSearchParams} postQuery={postQuery} />
+                                <ul>
+                                    {
+                                        resolvedPosts.filter(post => post.title.includes(postQuery.toLowerCase())).map((post) =>
+                                            <Link key={post.id} to={`/posts/${post.id}`} className="link">
+                                                <li>{post.title}</li>
+                                            </Link>
+                                        )
+                                    }
+                                </ul>
+                            </>
+                        )
+                    }
+                </Await>
+            </Suspense>
         </div>
     )
 };
 
-export { PostsPage };
+const postsLoader = async ({ request, params }) => {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+
+    if (!res.ok) {
+        throw new Response('', { status: res.status, statusText: 'Not found posts list !!!' })
+    }
+
+    return {
+        posts: res.json()
+    }
+}
+
+export { PostsPage, postsLoader };

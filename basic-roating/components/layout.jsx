@@ -14,13 +14,13 @@ const Layout = () => {
                 </div>
             </header>
 
-            <main>
+            <main className="main">
                 <Outlet />
             </main>
 
-            <footer>
-                <div className="container">
-                    I am the footer and i don't change myself
+            <footer className="footer">
+                <div className="container footer__text">
+                    {'\u00A9'} React Router
                 </div>
             </footer>
         </>

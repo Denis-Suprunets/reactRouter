@@ -1,41 +1,58 @@
-import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Suspense } from "react";
+import { Link, useNavigate, useLoaderData, Await, useAsyncValue } from "react-router-dom";
 import { Spiner } from "../components/spiner";
 
-const PostPage = () => {
-    const { id } = useParams();
-    const [post, setPost] = useState(null);
-    const navigate = useNavigate();
-    const goBack = () => { navigate(-1) }
+const Post = () => {
+    const awaitedPost = useAsyncValue();
+    return (
+        <>
+            <h1>{awaitedPost.title}</h1>
+            <p>{awaitedPost.body}</p>
+        </>
+    )
+}
 
-    useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
-            .then(res => res.json())
-            .then(data => setPost(data))
-    }, [id])
+const PostPage = () => {
+    const navigate = useNavigate();
+    const goBack = () => { navigate(-1) };
+    const { post, id } = useLoaderData();
 
     return (
-        <div className="container">
-            {!post && <Spiner />}
-            {post && (
-                <>
-                    <h1>{post.title}</h1>
-                    <p>{post.body}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column' }}>
+            <>
+                <Suspense fallback={<Spiner />}>
+                    <Await resolve={post}>
+                        <Post />
                         <Link
                             to={`/posts/${id}/edit`}
                             className='link'
-                            style={{ fontSize: '24px' }}
+                            style={{ fontSize: '24px', marginLeft: 'auto' }}
                         >Edit post</Link>
-                        <button
-                            onClick={goBack}
-                            style={{ padding: '10px', borderRadius: '5px' }}
-                        >go back</button>
-                    </div>
-                </>
-            )}
+                    </Await>
+                </Suspense>
+
+                <div >
+                    <button
+                        onClick={goBack}
+                        style={{ padding: '10px', borderRadius: '5px' }}
+                    >go back</button>
+                </div>
+            </>
         </div>
     )
 }
 
-export { PostPage };
+const postLoader = async ({ params }) => {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
+
+    if (!res.ok) {
+        throw new Response('', { status: res.status, statusText: 'Not found single post !!!' })
+    }
+
+    return {
+        post: res.json(),
+        id: params.id
+    }
+}
+
+export { PostPage, postLoader };
