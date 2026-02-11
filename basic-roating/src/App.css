@@ -1,0 +1,111 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('./assets/fonts/Roboto-VariableFont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  font-family: 'Roboto', sans-serif;
+  --link-color-nav: #fff;
+  --link-color-active: #3c7397;
+  --spiner: #555555;
+}
+
+html, body {
+  height: 100%;
+}
+
+#root {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header__link {
+  color: var(--link-color-nav);
+}
+
+.header__link_aktive {
+  color: var(--link-color-active);
+}
+
+.link {
+  color: rgb(30, 30, 30);
+}
+
+.about-link__container {
+  margin-bottom: 20px;
+  max-width: 20%;
+  display: flex;
+  justify-content: space-between;
+}
+
+h1 {
+  font-size: xx-large;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p {
+  font-size: x-large;
+  margin-bottom: 1rem;
+}
+
+.container {
+  max-width: 1280px;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.header {
+  width: 100%;
+  background-color: rgb(98, 98, 98);
+}
+
+.main {
+  position: relative;
+  flex: 1 1 auto;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}
+
+.footer__text {
+  display: inline-block;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-height: 80px;
+  font-size: xx-large;
+}
+
+.text-page {
+  font-size: xxx-large;
+  text-align: center;
+  padding: 40px 0;
+}
+
+/* spiner >>*/
+.spiner {
+  width: 50px;
+  height: 50px;
+  border-left: 5px solid var(--spiner);
+  border-right: 5px solid var(--spiner);
+  border-radius: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from{
+    transform: rotate(0);
+  }
+  to{
+    transform: rotate(360deg);
+  }
+}
